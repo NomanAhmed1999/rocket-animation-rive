@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Rive Animation</title>
+    <script src="https://unpkg.com/@rive-app/canvas@2.10.3"></script>
+</head>
+<body>
+
+    <div class="container">
+        <canvas id="canvas" width="500" height="500"></canvas>
+
+        <button id="btn">Upload File</button>
+    </div>
+    
+
+    <script>
+        const btn = document.getElementById("btn");
+        const container = document.querySelector(".container");
+        const r = new rive.Rive({
+            src: "rocket-animation.riv",
+            // OR the path to a discoverable and public Rive asset
+            // src: '/public/example.riv',
+            canvas: document.getElementById("canvas"),
+            autoplay: true,
+            stateMachines: "State Machine 1",
+            onLoad: () => {
+            //   r.resizeDrawingSurfaceToCanvas();
+            const inputs = r.stateMachineInputs("State Machine 1");
+            const trigger = inputs.find((i) => i.name === "Trigger 1");
+            btn.onclick = () => trigger.fire();
+            },
+            onStateChange: (state) => {
+                if(state.data[0] === "right-rotate" || state.data[0] === "flying") {
+                    container.style.backgroundColor = "black";
+                    btn.innerHTML = "Uploading..."
+                }else if(state.data[0] === "rotate-left"){
+                    btn.innerHTML = "Finished!";
+                    container.style.backgroundColor = "rgb(0, 153, 255)";
+                }else if(state.data[0] === "Idle"){
+                    setTimeout(() => {
+                        btn.innerHTML = "Upload File"
+                    }, 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
